@@ -118,7 +118,9 @@ export class GameInput {
     this.keys = {} as Record<Action, Phaser.Input.Keyboard.Key[]>;
     for (const action of ACTIONS) {
       this.keys[action] = KEY_MAP[action].map((code) => {
-        const key = keyboard.addKey(code);
+        // As capturas do Phaser sao globais. Nao bloqueie letras em campos HTML
+        // depois que o jogador sair da fase (login, cadastro e busca de cidade).
+        const key = keyboard.addKey(code, false);
         key.on('down', () => {
           this.queued[action] = true;
           if (action === 'left' || action === 'right') {

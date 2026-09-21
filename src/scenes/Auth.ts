@@ -45,13 +45,18 @@ export class Auth extends Phaser.Scene {
       0.55,
     );
     if (this.input.keyboard) {
-      // O formulario precisa receber todas as teclas (inclusive espaco).
+      // O formulario precisa receber todas as teclas, inclusive as que o jogo
+      // captura globalmente enquanto uma fase esta aberta.
+      this.input.keyboard.disableGlobalCapture();
       this.input.keyboard.enabled = false;
     }
     this.mount(isFirebaseConfigured ? 'login' : 'guest');
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.root?.remove();
-      if (this.input.keyboard) this.input.keyboard.enabled = true;
+      if (this.input.keyboard) {
+        this.input.keyboard.enabled = true;
+        this.input.keyboard.enableGlobalCapture();
+      }
     });
   }
 
@@ -182,6 +187,11 @@ export class Auth extends Phaser.Scene {
         submit,
       );
     });
+    for (const eventName of ['keydown', 'keyup'] as const) {
+      card.addEventListener(eventName, (event) => {
+        event.stopPropagation();
+      });
+    }
 
     document.body.append(root);
     apply(initial);

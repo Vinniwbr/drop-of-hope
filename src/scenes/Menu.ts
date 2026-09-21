@@ -576,9 +576,15 @@ export class Menu extends Phaser.Scene {
   private openWeather() {
     audio.sfx('click');
     const keyboard = this.input.keyboard;
-    if (keyboard) keyboard.enabled = false;
+    if (keyboard) {
+      keyboard.disableGlobalCapture();
+      keyboard.enabled = false;
+    }
     const modal = openModal('Clima do jogo', () => {
-      if (keyboard) keyboard.enabled = true;
+      if (keyboard) {
+        keyboard.enabled = true;
+        keyboard.enableGlobalCapture();
+      }
     });
     const location = getLocation();
     modal.body.append(
@@ -619,6 +625,9 @@ export class Menu extends Phaser.Scene {
     input.addEventListener('keydown', (event) => {
       event.stopPropagation();
       if (event.key === 'Enter') search.click();
+    });
+    input.addEventListener('keyup', (event) => {
+      event.stopPropagation();
     });
     locate.addEventListener('click', () => {
       message.textContent = 'Aguardando permissão do navegador...';
