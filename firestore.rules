@@ -1,0 +1,60 @@
+rules_version = '2';
+
+// Drop of Hope - regras do Firestore
+//
+//  players/{uid}      perfil e progresso: SO o proprio dono le e escreve.
+//  leaderboard/{uid}  pontuacao total publica: qualquer um le, so o dono escreve.
+//
+// Nenhuma senha passa por aqui: o Firebase Authentication cuida delas.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function optionalNumber(data, key, max) {
+      return !(key in data) || (data[key] is number && data[key] >= 0 && data[key] <= max);
+    }
+
+    function validPlayer(data) {
+      return data.keys().hasOnly([
+          'username', 'playerId', 'bestScores', 'completedPhases',
+          'stats', 'totalScore', 'updatedAt'
+        ])
+        && data.username is string
+        && data.username.size() >= 2 && data.username.size() <= 16
+        && data.playerId is string
+        && data.playerId.size() >= 6 && data.playerId.size() <= 16
+        && optionalNumber(data, 'totalScore', 100000)
+        && (!('completedPhases' in data)
+            || (data.completedPhases is list && data.completedPhases.size() <= 5));
+    }
+
+    function validEntry(data) {
+      return data.keys().hasOnly([
+          'username', 'playerId', 'totalScore', 'phases', 'updatedAt'
+        ])
+        && data.username is string
+        && data.username.size() >= 2 && data.username.size() <= 16
+        && data.playerId is string
+        && data.playerId.size() >= 6 && data.playerId.size() <= 16
+        && data.totalScore is number
+        && data.totalScore >= 0 && data.totalScore <= 100000
+        && data.phases is number && data.phases >= 0 && data.phases <= 5
+        && data.updatedAt == request.time;
+    }
+
+    match /players/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validPlayer(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /leaderboard/{uid} {
+      allow read: if true;
+      allow create, update: if isOwner(uid) && validEntry(request.resource.data);
+      allow delete: if false;
+    }
+  }
+}
