@@ -2070,7 +2070,7 @@ export class GamePhase extends Phaser.Scene {
     this.player.body.setVelocity(0, 0);
     this.time.timeScale = 0.45;
     this.physics.world.timeScale = 2.2;
-    this.cameras.main.zoomTo(1.08, 1500);
+    this.cameras.main.zoomTo(RENDER_SCALE * 1.08, 1500);
     this.time.delayedCall(1300, () => {
       this.time.timeScale = 1;
       this.physics.world.timeScale = 1;
@@ -2084,7 +2084,7 @@ export class GamePhase extends Phaser.Scene {
     this.player.freeze();
     audio.sfx('win');
     this.cameras.main.flash(500, 255, 255, 255);
-    this.cameras.main.zoomTo(1, 1200);
+    this.cameras.main.zoomTo(RENDER_SCALE, 1200);
     this.cameras.main.stopFollow();
 
     const camera = this.cameras.main;
