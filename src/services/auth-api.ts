@@ -21,14 +21,19 @@ import {
   setSession,
 } from './session';
 
-const USERNAME_PATTERN = /^[A-Za-z0-9_]{3,16}$/;
+const USERNAME_PATTERN = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9_ ]{3,16}$/;
 /** O Firebase Auth exige e-mail; o nome de usuario vira um e-mail interno. */
 const EMAIL_DOMAIN = 'dropoffhope.app';
 
 export class AuthError extends Error {}
 
 function toEmail(username: string) {
-  return `${username.toLowerCase()}@${EMAIL_DOMAIN}`;
+  const key = username
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, '_');
+  return `${key}@${EMAIL_DOMAIN}`;
 }
 
 function explain(error: unknown): AuthError {
@@ -71,7 +76,7 @@ export function validateCredentials(
   password: string,
 ): string | null {
   if (!USERNAME_PATTERN.test(username)) {
-    return 'Nome de usuário: 3 a 16 letras, números ou _ (sem espaços).';
+    return 'Nome de usuário: use de 3 a 16 letras, números, espaços ou _.';
   }
   if (password.length < 6) {
     return 'A senha precisa ter pelo menos 6 caracteres.';

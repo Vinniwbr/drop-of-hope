@@ -164,18 +164,6 @@ export class Menu extends Phaser.Scene {
   }
 
   private createBottomBar() {
-    const progress = ProgressApi.get();
-    const online = getSession()?.mode === 'user';
-    this.add
-      .text(
-        46,
-        564,
-        online
-          ? `PROGRESSO NA NUVEM  ·  ${String(progress.completedPhases.length)}/${String(PHASE_COUNT)} FASES  ·  ${String(progress.totalScore)} PTS`
-          : `PROGRESSO NESTE APARELHO  ·  ${String(progress.completedPhases.length)}/${String(PHASE_COUNT)} FASES  ·  ${String(progress.totalScore)} PTS`,
-        textStyle(11, '#a8abb2', 'monospace'),
-      )
-      .setDepth(22);
     this.weatherText = this.add
       .text(GAME_WIDTH - 28, 564, '', textStyle(10, '#a8abb2', 'monospace'))
       .setOrigin(1, 0)

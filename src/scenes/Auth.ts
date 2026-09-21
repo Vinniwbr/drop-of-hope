@@ -89,6 +89,8 @@ export class Auth extends Phaser.Scene {
     nameInput.maxLength = 16;
     nameInput.autocomplete = 'username';
     nameInput.autocapitalize = 'off';
+    nameInput.name = 'username';
+    nameInput.placeholder = '3 a 16 caracteres';
     nameInput.spellcheck = false;
     nameInput.value = readStorage(LAST_USER_KEY) ?? '';
     nameLabel.append(nameInput);
@@ -97,12 +99,17 @@ export class Auth extends Phaser.Scene {
     const passInput = el('input', 'doh-input');
     passInput.type = 'password';
     passInput.maxLength = 64;
+    passInput.minLength = 6;
+    passInput.name = 'password';
+    passInput.placeholder = 'Mínimo de 6 caracteres';
     passLabel.append(passInput);
 
     const confirmLabel = el('label', 'doh-label', 'Repita a senha');
     const confirmInput = el('input', 'doh-input');
     confirmInput.type = 'password';
     confirmInput.maxLength = 64;
+    confirmInput.minLength = 6;
+    confirmInput.name = 'password-confirmation';
     confirmInput.autocomplete = 'new-password';
     confirmLabel.append(confirmInput);
 
